@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -21,13 +22,15 @@ public class Efficient {
     static int GAP_PENALTY = 30;
 
     // Cost matrix for mismatches
-    static final int[][] MIS_MATCH = {
-            {0, 110, 48, 94},
-            {110, 0, 118, 48},
-            {48, 118, 0, 110},
-            {94, 48, 110, 0}
-    };
-    static HashMap<Character, Integer> map;
+//    static final int[][] MIS_MATCH = {
+//            {0, 110, 48, 94},
+//            {110, 0, 118, 48},
+//            {48, 118, 0, 110},
+//            {94, 48, 110, 0}
+//    };
+//    static HashMap<Character, Integer> map;
+
+    static Map<Character, Map<Character, Integer>> MIS_MATCH;
     public static void main(String[] args) {
 
         String input = args[0];
@@ -36,11 +39,7 @@ public class Efficient {
         readFromFile(input); // Read input from file
 
         // Initialize map for character to integer mapping
-        map = new HashMap<>();
-        map.put('A', 0);
-        map.put('C', 1);
-        map.put('G', 2);
-        map.put('T', 3);
+        initializeMismatchMatrix();
 
         // Record memory usage and start time
         double beforeUsedMem = getMemoryInKB();
@@ -60,6 +59,35 @@ public class Efficient {
 
         // Write results to the output file
         writeToFile(output, (float) totalTime, (float) totalUsage);
+
+    }
+
+    public static void initializeMismatchMatrix() {
+        MIS_MATCH = new HashMap<>();
+        MIS_MATCH.put('A', new HashMap<>());
+        MIS_MATCH.get('A').put('A', 0);
+        MIS_MATCH.get('A').put('C', 110);
+        MIS_MATCH.get('A').put('G', 48);
+        MIS_MATCH.get('A').put('T', 94);
+
+        MIS_MATCH.put('C', new HashMap<>());
+        MIS_MATCH.get('C').put('A', 110);
+        MIS_MATCH.get('C').put('C', 0);
+        MIS_MATCH.get('C').put('G', 118);
+        MIS_MATCH.get('C').put('T', 48);
+
+        MIS_MATCH.put('G', new HashMap<>());
+        MIS_MATCH.get('G').put('A', 48);
+        MIS_MATCH.get('G').put('C', 118);
+        MIS_MATCH.get('G').put('G', 0);
+        MIS_MATCH.get('G').put('T', 110);
+
+        MIS_MATCH.put('T', new HashMap<>());
+        MIS_MATCH.get('T').put('A', 94);
+        MIS_MATCH.get('T').put('C', 48);
+        MIS_MATCH.get('T').put('G', 110);
+        MIS_MATCH.get('T').put('T', 0);
+
 
     }
 
@@ -123,7 +151,7 @@ public class Efficient {
 
         for(int i=1;i<=x.length();i++){
             for(int j=1;j<=y.length();j++){
-                int temp = MIS_MATCH[map.get(x.charAt(i-1))][map.get(y.charAt(j-1))];
+                int temp = MIS_MATCH.get(x.charAt(i-1)).get(y.charAt(j-1));
                 dp[i][j] = Math.min(dp[i-1][j-1]+temp,Math.min(dp[i-1][j]+GAP_PENALTY,dp[i][j-1]+GAP_PENALTY));
             }
         }
@@ -136,12 +164,12 @@ public class Efficient {
         StringBuilder sb2 = new StringBuilder();
 
         while(i>0 || j>0){
-            if(i >= 1 && j >= 1 && dp[i][j] == dp[i-1][j-1]+MIS_MATCH[map.get(x.charAt(i-1))][map.get(y.charAt(j-1))]){
+            if(i >= 1 && j >= 1 && dp[i][j] == dp[i-1][j-1]+MIS_MATCH.get(x.charAt(i-1)).get(y.charAt(j-1))){
                 sb1.append(x.charAt(i-1));
                 sb2.append(y.charAt(j-1));
                 i--;
                 j--;
-                cost += MIS_MATCH[map.get(x.charAt(i))][map.get(y.charAt(j))];
+                cost += MIS_MATCH.get(x.charAt(i)).get(y.charAt(j));
             }else if(i >=1 && dp[i][j] == dp[i-1][j]+GAP_PENALTY){
                 sb1.append(x.charAt(i-1));
                 sb2.append('_');
@@ -171,7 +199,7 @@ public class Efficient {
             int[] curr = new int[y.length()+1];
             curr[0] = i*GAP_PENALTY;
             for(int j=1;j<=y.length();j++){
-                int cost = MIS_MATCH[map.get(x.charAt(i-1))][map.get(y.charAt(j-1))];
+                int cost = MIS_MATCH.get(x.charAt(i-1)).get(y.charAt(j-1));
                 curr[j] = Math.min(prev[j-1]+cost,Math.min(prev[j]+GAP_PENALTY,curr[j-1]+GAP_PENALTY));
             }
             prev = curr;
