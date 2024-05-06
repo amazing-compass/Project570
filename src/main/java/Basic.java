@@ -11,26 +11,33 @@ import java.util.stream.Stream;
 public class Basic {
 
 
+    //Sequences
     static String s1;
     static String s2;
+    //Alignments
     static String a1;
     static String a2;
 
+    //alignment cost
     static int cost = 0;
 
     static int GAP_PENALTY = 30;
 
     static int[][] MIS_MATCH = {{0,110,48,94},{110,0,118,48},{48,118,0,110},{94,48,110,0}};
 
+    //map to get index of character
     static HashMap<Character, Integer> map;
+
 
     public static void main(String[] args) {
 
         String input = args[0];
         String output = args[1];
 
+        //Read input file
         readFromFile(input);
 
+        //map to get index of character
         map = new HashMap<>();
         map.put('A', 0);
         map.put('C', 1);
@@ -39,29 +46,38 @@ public class Basic {
 
 
         System.gc();
+
+        //Get memory and time before execution
         double beforeUsedMem = getMemoryInKB();
         double startTime = getTimeInMilliseconds();
 
+        //Get alignment
         getAlignment(s1, s2);
 
+        //Get memory and time after execution
         double afterUsedMem = getMemoryInKB();
         double endTime = getTimeInMilliseconds();
         double totalUsage =  afterUsedMem-beforeUsedMem;
         double totalTime =  endTime - startTime;
 
+        //Write to output file
         writeToFile(output, (float) totalTime, (float) totalUsage);
 
         System.gc();
 
     }
 
+    //Get alignment
     public static void getAlignment(String x, String y){
 
         int m = x.length();
         int n = y.length();
 
+        //dp table
         int[][] dp = new int[m+1][n+1];
 
+
+        //initialize dp table
         for(int i=0;i<m+1;i++){
             dp[i][0] = i*GAP_PENALTY;
         }
@@ -70,6 +86,7 @@ public class Basic {
             dp[0][i] = i*GAP_PENALTY;
         }
 
+        //fill dp table
         for(int i=1;i<m+1;i++){
             for(int j=1;j<n+1;j++){
                 int cost = MIS_MATCH[map.get(s1.charAt(i-1))][map.get(s2.charAt(j-1))];
@@ -77,12 +94,14 @@ public class Basic {
             }
         }
 
+        //top down approach to get alignment/Backtrack to get the alignment result
         int i = x.length();
         int j = y.length();
 
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
 
+        //
         while(i>0 || j>0){
             if(i >= 1 && j >= 1 && dp[i][j] == dp[i-1][j-1]+MIS_MATCH[map.get(x.charAt(i-1))][map.get(y.charAt(j-1))]){
                 sb1.append(x.charAt(i-1));
@@ -102,10 +121,10 @@ public class Basic {
                 cost += GAP_PENALTY;
             }
         }
-
+        //Get the reverse result
+        // Store the aligned sequences in global variables
         a1 = reverseString(sb1.toString());
         a2 = reverseString(sb2.toString());
-
     }
 
 
@@ -113,6 +132,7 @@ public class Basic {
         return (new StringBuilder(s).reverse().toString());
     }
 
+    ////Read input data from the file
     public static void readFromFile(String path) {
 
         Pattern PATTERN = Pattern.compile("^\\d+$");
@@ -152,6 +172,7 @@ public class Basic {
         }
     }
 
+    //Write the result to the output file
     public static void writeToFile(String outputFilePath, float time, float memory) {
         try {
             FileWriter myWriter = new FileWriter(outputFilePath);
@@ -169,6 +190,7 @@ public class Basic {
 
     }
 
+    //insert the string into the specified position
     public static String getString(StringBuilder sb, List<Integer> list){
         for(int i=0;i<list.size();i++){
             int index = list.get(i);

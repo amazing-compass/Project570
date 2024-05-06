@@ -20,6 +20,7 @@ public class Efficient {
 
     static int GAP_PENALTY = 30;
 
+    // Cost matrix for mismatches
     static final int[][] MIS_MATCH = {
             {0, 110, 48, 94},
             {110, 0, 118, 48},
@@ -32,28 +33,32 @@ public class Efficient {
         String input = args[0];
         String output = args[1];
 
-        readFromFile(input);
+        readFromFile(input); // Read input from file
 
+        // Initialize map for character to integer mapping
         map = new HashMap<>();
         map.put('A', 0);
         map.put('C', 1);
         map.put('G', 2);
         map.put('T', 3);
 
-
+        // Record memory usage and start time
         double beforeUsedMem = getMemoryInKB();
         double startTime = getTimeInMilliseconds();
 
+        // Get the alignment
         String[] alignment = getAlignment(s1, s2);
 
         a1 = alignment[0];
         a2 = alignment[1];
 
+        // Record memory usage and end time
         double afterUsedMem = getMemoryInKB();
         double endTime = getTimeInMilliseconds();
         double totalUsage =  afterUsedMem-beforeUsedMem;
         double totalTime =  endTime - startTime;
 
+        // Write results to the output file
         writeToFile(output, (float) totalTime, (float) totalUsage);
 
     }
@@ -67,20 +72,22 @@ public class Efficient {
 
 
 
-    //ok
+    //// Get the alignment of two strings
     static String[] getAlignment(String x, String y){
+        // Base case: if either string's length is less than or equal to 2
         if(x.length() <= 2 || y.length() <= 2){
             return baseCaseAlignment(x, y);
         }
 
+        // Divide the strings into left and right halves
         String xLeft = x.substring(0, x.length()/2);
         String xRight = x.substring(x.length()/2);
 
+        // Get the cost of alignment for the left and right halves
         int[] forwardCost = getCost(xLeft, y);
         int[] backwardCost = getCost(reverseString(xRight), reverseString(y));
 
-
-
+        // Find the split index with minimum cost
         int splitIndex = -1;
         int minCost = Integer.MAX_VALUE;
 
@@ -92,17 +99,17 @@ public class Efficient {
             }
         }
 
+        // Recursively get alignments for left and right halves
         String[] left = getAlignment(xLeft, y.substring(0, splitIndex));
         String[] right = getAlignment(xRight, y.substring(splitIndex));
 
+        // Combine the alignments of left and right halves
         return new String[]{left[0]+right[0], left[1]+right[1]};
 
     }
 
-    //
+    // Get the alignment for base cases
     static  String[] baseCaseAlignment(String x, String y){
-
-
 
         int[][] dp = new int[x.length()+1][y.length()+1];
 
@@ -121,10 +128,7 @@ public class Efficient {
             }
         }
 
-
-
-
-
+        // Trace back to get the alignment
         int i = x.length();
         int j = y.length();
 
@@ -151,10 +155,11 @@ public class Efficient {
             }
         }
 
+        // Return the reversed alignments
         return new String[]{reverseString(sb1.toString()), reverseString(sb2.toString())};
     }
 
-    //ok
+    // Get the cost of alignment between two strings
     static int[] getCost(String x, String y){
         int[] prev = new int[y.length()+1];
 
