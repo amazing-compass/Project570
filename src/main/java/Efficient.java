@@ -38,8 +38,13 @@ public class Efficient {
 
         readFromFile(input); // Read input from file
 
+        System.out.println("s1: " + s1.length());
+        System.out.println("s2: " + s2.length());
+
         // Initialize map for character to integer mapping
         initializeMismatchMatrix();
+
+        System.gc();
 
         // Record memory usage and start time
         double beforeUsedMem = getMemoryInKB();
@@ -56,6 +61,8 @@ public class Efficient {
         double endTime = getTimeInMilliseconds();
         double totalUsage =  afterUsedMem-beforeUsedMem;
         double totalTime =  endTime - startTime;
+
+        System.gc();
 
         // Write results to the output file
         writeToFile(output, (float) totalTime, (float) totalUsage);
