@@ -264,8 +264,8 @@ public class Efficient {
             myWriter.write(cost+"\n");
             myWriter.write(a1 + "\n");
             myWriter.write(a2 + "\n");
-            myWriter.write("Time: " + time + " ms\n");
-            myWriter.write("Memory: " + memory + " KB\n");
+            myWriter.write(time + "\n");
+            myWriter.write(memory + "\n");
 
             myWriter.close();
 

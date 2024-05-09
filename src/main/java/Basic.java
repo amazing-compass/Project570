@@ -1,13 +1,17 @@
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import java.io.*;
+import java.util.*;
+
+
+
 
 public class Basic {
 
@@ -43,10 +47,8 @@ public class Basic {
 
         //Read input file
         readFromFile(input);
-
         //map to get index of character
         initializeMismatchMatrix();
-
 
         System.gc();
 
@@ -63,10 +65,11 @@ public class Basic {
         double totalUsage =  afterUsedMem-beforeUsedMem;
         double totalTime =  endTime - startTime;
 
+        System.gc();
+
         //Write to output file
         writeToFile(output, (float) totalTime, (float) totalUsage);
 
-        System.gc();
 
     }
 
@@ -213,8 +216,8 @@ public class Basic {
             myWriter.write(cost+"\n");
             myWriter.write(a1 + "\n");
             myWriter.write(a2 + "\n");
-            myWriter.write("Time: " + time + " ms\n");
-            myWriter.write("Memory: " + memory + " KB\n");
+            myWriter.write(time + "\n");
+            myWriter.write(memory + "\n");
 
             myWriter.close();
         } catch (IOException e) {
@@ -242,6 +245,8 @@ public class Basic {
     }
 
 }
+
+
 
 
 
