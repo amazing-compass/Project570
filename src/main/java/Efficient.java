@@ -96,15 +96,12 @@ public class Efficient {
     }
 
 
-
-
-
-
     //// Get the alignment of two strings
     static String[] getAlignment(String x, String y){
         // Base case: if either string's length is less than or equal to 2
         if(x.length() <= 2 || y.length() <= 2){
-            return baseCaseAlignment(x, y);
+            baseCaseAlignment(x, y);
+            return new String[]{a1, a2};
         }
 
         // Divide the strings into left and right halves
@@ -134,10 +131,18 @@ public class Efficient {
         // Combine the alignments of left and right halves
         return new String[]{left[0]+right[0], left[1]+right[1]};
 
+
     }
 
+
+
     // Get the alignment for base cases
-    static  String[] baseCaseAlignment(String x, String y){
+    static void baseCaseAlignment(String x, String y){
+
+        if(x.equals(y)){
+            a1 = x;
+            a2 = y;
+        }
 
         int[][] dp = new int[x.length()+1][y.length()+1];
 
@@ -184,25 +189,30 @@ public class Efficient {
         }
 
         // Return the reversed alignments
-        return new String[]{reverseString(sb1.toString()), reverseString(sb2.toString())};
+        a1 = sb1.reverse().toString();
+        a2 = sb2.reverse().toString();
+        //return new String[]{sb1.reverse().toString(), sb2.reverse().toString()};
     }
+
 
     // Get the cost of alignment between two strings
     static int[] getCost(String x, String y){
         int[] prev = new int[y.length()+1];
+        int[] curr = new int[y.length()+1];
 
         for(int i=0;i<=y.length();i++){
             prev[i] = i*GAP_PENALTY;
         }
 
         for(int i=1;i<=x.length();i++){
-            int[] curr = new int[y.length()+1];
             curr[0] = i*GAP_PENALTY;
             for(int j=1;j<=y.length();j++){
                 int cost = MIS_MATCH.get(x.charAt(i-1)).get(y.charAt(j-1));
                 curr[j] = Math.min(prev[j-1]+cost,Math.min(prev[j]+GAP_PENALTY,curr[j-1]+GAP_PENALTY));
             }
+            int[] temp = prev;
             prev = curr;
+            curr = temp;
         }
         return prev;
     }
@@ -283,18 +293,3 @@ public class Efficient {
         return System.nanoTime()/10e6;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
